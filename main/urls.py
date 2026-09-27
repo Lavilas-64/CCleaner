@@ -2,7 +2,6 @@ from django.urls import path
 from django.views import View
 
 from . import views
-from ..enf.urls import urlpatterns
 
 app_name = 'main'
 

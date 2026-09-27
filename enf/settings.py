@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 from pathlib import Path
 import os
 
-from django.conf.global_settings import SECRET_KEY, STATIC_ROOT, MEDIA_URL
+from django.conf.global_settings import SECRET_KEY, STATIC_ROOT, MEDIA_URL, SESSION_COOKIE_AGE, \
+    SESSION_SAVE_EVERY_REQUEST
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'main',
+    'cart',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +57,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'cart.middleware.CartMiddleware',
 ]
 
 ROOT_URLCONF = 'enf.urls'
@@ -69,6 +73,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'cart.context_processors.cart_processor',
             ],
         },
     },
@@ -82,8 +88,13 @@ WSGI_APPLICATION = 'enf.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST', 'db'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'ATOMIC_REQUESTS': True,
     }
 }
 
@@ -137,3 +148,6 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+SESSION_COOKIE_AGE = 86400 #30 days
+SESSION_SAVE_EVERY_REQUEST = True

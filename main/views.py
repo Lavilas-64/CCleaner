@@ -1,4 +1,3 @@
-from itertools import product
 from multiprocessing import context
 from tempfile import template
 from typing import Any
@@ -28,13 +27,13 @@ class IndexView(TemplateView):
         return TemplateResponse(request, self.template_name, context)
 
 class CatalogView(TemplateView):
-    template = 'main/base.html'
+    template_name = 'main/base.html'
 
     FILTER_MAPPING = {
         'color': lambda queryset, value: queryset.filter(color_iexact=value),
         'min_price': lambda queryset, value: queryset.filter(price_gte=value),
         'max_price': lambda queryset, value: queryset.filter(price_lte=value),
-        'size': lambda queryset, value: queryset.filter(product_size_size_name=value),
+        'size': lambda queryset, value: queryset.filter(product_sizes_size_name=value),
     }
 
     def get_context_data(self, **kwargs):
@@ -46,7 +45,7 @@ class CatalogView(TemplateView):
 
         if category_slug:
             current_category = get_object_or_404(Category, slug = category_slug)
-            products = products.filter(catrgory=current_category)
+            products = products.filter(category=current_category)
 
         query = self.request.GET.get('q')
         if query:
@@ -89,13 +88,13 @@ class CatalogView(TemplateView):
                 return TemplateResponse(request, 'main/search_input.html', context)
             elif context.get('reset_search'):
                 return TemplateResponse(request, 'main/search_button.html', {})
-            template = 'main/filter_modal.html' if request.GET.get('show_filters') == 'ture' else 'main/catalog.html'
+            template = 'main/filter_modal.html' if request.GET.get('show_filters') == 'true' else 'main/catalog.html'
             return TemplateResponse(request, template, context)
         return TemplateResponse(request, self.template_name, context)
 
 
 class ProductDetailView(DetailView):
-    model = product
+    model = Product
     template_name = 'main/base.html'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
@@ -113,8 +112,8 @@ class ProductDetailView(DetailView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         context = self.get_context_data(**kwargs)
-        if request.header.get('HX-Request'):
+        if request.headers.get('HX-Request'):
             return TemplateResponse(request, 'main/product_detail.html', context)
-        raise TemplateResponse(request, self.template_name, context)
+        return TemplateResponse(request, self.template_name, context)
 
 

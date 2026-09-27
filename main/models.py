@@ -16,12 +16,12 @@ class Category(models.Model):
 class Size(models.Model):
     name = models.CharField(max_length=20)
 
-    def __set__(self):
+    def __str__(self):
         return self.name
 
 class ProductSize(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE,
-                                related_name='product_size')
+                                related_name='product_sizes')
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
     stock = models.PositiveIntegerField(default=0)
 
