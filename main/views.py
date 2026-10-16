@@ -23,7 +23,7 @@ class IndexView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         if request.headers.get('HX-Request'):
-            return TemplateResponse(request, 'main/home_context.haml', context)
+            return TemplateResponse(request, 'main/home_context.html', context)
         return TemplateResponse(request, self.template_name, context)
 
 class CatalogView(TemplateView):
